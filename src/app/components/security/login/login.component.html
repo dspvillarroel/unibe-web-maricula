@@ -1,0 +1,59 @@
+<p-toast></p-toast>
+<form [formGroup]="loginForm">
+  <div
+    class="bg-gradient-to-r from-blue-500 to-yellow-400 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="flex flex-col items-center justify-center w-full max-w-xl">
+      <div
+        style="border-radius: 32px; padding: 0.3rem; background: linear-gradient(180deg, #004b8d 10%, rgba(0, 75, 141, 0) 40%)">
+        <div
+          class="w-full dark:bg-white/30 bg-white/30 backdrop-blur-md border border-white/30 py-12 px-6 sm:px-12"
+          style="border-radius: 28px">
+          <div class="text-center mb-6">
+            <img
+              src="/assets/logo-name.webp"
+              alt="Logo UNIB.E"
+              class="mx-auto mb-2 max-h-28 object-contain rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="text-center mb-6">
+            <div class="text-gray-800 dark:text-white text-2xl sm:text-3xl font-bold mb-2">
+              ¡Bienvenido a UNIB.E!
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 text-base">
+              Ingresa con tu cuenta institucional para continuar.
+            </p>
+          </div>
+
+          <div class="p-formgrid grid">
+            <div class="field col-12 sd:col-6 md:col-4">
+              <label class="block text-gray-800 dark:text-white text-sm font-semibold mb-1">Identificación</label>
+              <p-inputgroup>
+                <p-inputgroup-addon>
+                  <i class="pi pi-user"></i>
+                </p-inputgroup-addon>
+                <input pInputText formControlName="username" placeholder="1752xxxxxx"/>
+              </p-inputgroup>
+            </div>
+
+            <div class="field col-12 sd:col-6 md:col-4">
+
+              <label class="block text-gray-800 dark:text-white text-sm font-semibold mb-1">Contraseña</label>
+              <div class="w-full">
+                <p-password formControlName="password" [toggleMask]="true" [feedback]="false"
+                            styleClass="p-password p-component p-inputwrapper p-input-icon-right" [style]="{'width':'100%'}"
+                            [inputStyle]="{'width':'100%'}"></p-password>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between mt-2 mb-6 gap-4 text-sm">
+              <span class="text-primary hover:underline cursor-pointer">¿Olvidaste tu contraseña?</span>
+            </div>
+
+            <p-button label="Iniciar sesión" styleClass="w-full font-semibold text-white" (onClick)="login()"></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

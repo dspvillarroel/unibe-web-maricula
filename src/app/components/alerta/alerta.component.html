@@ -1,0 +1,11 @@
+<p-dialog header="Confirmación"
+          [modal]="true" [draggable]="false" [closable]="false"
+          [(visible)]="visible" position="top" [style]="{ width: '30rem' }"
+>
+  <span
+    class="text-surface-500 dark:text-surface-400 block mb-8">{{descripcion()}}</span>
+  <div class="flex justify-end gap-2">
+    <p-button icon="pi pi-times" label="Cancelar" severity="secondary" (click)="onCancelar()"/>
+    <p-button icon="pi pi-check" label="Eliminar" (click)="onConfirm()"/>
+  </div>
+</p-dialog>
