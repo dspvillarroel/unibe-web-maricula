@@ -6,6 +6,7 @@ import {GenreResponse} from '@app/model/genre/genre-response';
 import {CarreraInfoResponse} from '@app/model/career/carrera-info-response';
 import {StudentRequest} from '@app/model/administrator/request/student-request';
 import {StudentRegisterRequest} from '@app/model/student/student-register-request';
+import {CodUsuarioRequest} from '@app/model/administrator/request/cod-usuario-request';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,8 @@ export class AdministratorService {
     return this.http.post<StudentResponse>(url, studentRequest);
   }
 
-  exportStudents() {
-    const url = `${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/students/csv`;
+  exportStudents(codCareer: number, level: number) {
+    const url = `${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/students/csv/carrera/${codCareer}/nivel/${level}`;
     return this.http.get(url, {responseType: 'blob'});
   }
 
@@ -38,5 +39,13 @@ export class AdministratorService {
 
   registerStudent(studentRequest: StudentRegisterRequest) {
     return this.http.post<void>(`${this.apiBaseSecurity}${this.securityContext}/api/v1/students`, studentRequest);
+  }
+
+  resendEmail(codUsuarioRequest: CodUsuarioRequest) {
+    return this.http.post<void>(`${this.apiBaseSecurity}${this.securityContext}/api/v1/administrators/email`, codUsuarioRequest);
+  }
+
+  changeEnabled(codUsuarioRequest: CodUsuarioRequest) {
+    return this.http.put<void>(`${this.apiBaseSecurity}${this.securityContext}/api/v1/administrators/enable-status`, codUsuarioRequest);
   }
 }

@@ -1,21 +1,19 @@
-@let studentInfo = studentCurrenLevel$() ;
-
-<main class="card">
-  <p class="text-center">Malla Curricular Nivel I</p>
-  @for (level of studentInfo; track level.codAsignatura) {
-    <p>{{ level | json }}</p>
-  }
-
-  <div class="card flex justify-center overflow-x-auto">
-    <p-organization-chart [value]="data" selectionMode="multiple" [collapsible]="true">
-      <ng-template let-node pTemplate="person">
-        <div class="flex flex-col">
-          <div class="flex flex-col items-center">
-            <div class="font-bold mb-2">{{ node.data.name }}</div>
-            <div>{{ node.data.title }}</div>
+<main class="card overflow-x-auto">
+  <p-organization-chart [value]="this.studentTreeData$()" selectionMode="multiple" [collapsible]="true">
+    <ng-template let-node pTemplate="person">
+      <div class="flex flex-col w-full p-2 bg-white">
+        <div class="divide-y divide-gray-300 text-center">
+          <div class="py-2 font-bold text-base text-slate-800">
+            {{ node.data.code }}
+          </div>
+          <div class="py-2 text-slate-600">
+            {{ node.data.title }}
+          </div>
+          <div class="py-2 text-slate-600">
+            {{ node.data.horas }} horas
           </div>
         </div>
-      </ng-template>
-    </p-organization-chart>
-  </div>
+      </div>
+    </ng-template>
+  </p-organization-chart>
 </main>

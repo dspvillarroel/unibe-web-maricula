@@ -12,7 +12,7 @@ export const errorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
     if (error.status === 0) {
       errorMesage = "El servidor no se encuentra disponible";
     } else if (error.status === 401 || error.status === 403) {
-      errorMesage = 'Su sesión a caducado, inicié sesión nuevamente.';
+      errorMesage = 'Su sesión a caducado, inicie sesión nuevamente.';
     } else {
       errorMesage = error?.error.mensaje ?? "Ocurrió un error inesperado";
     }

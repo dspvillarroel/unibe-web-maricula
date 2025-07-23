@@ -41,7 +41,6 @@ export class LoginComponent implements OnInit {
     })
   }
 
-
   protected login() {
     if (this.loginForm.invalid) {
       this.showAlert(SeverityEnum.WARN, 'Advertencia', 'Todos los campos son obligatorios');

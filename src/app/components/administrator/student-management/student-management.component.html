@@ -1,32 +1,26 @@
 <div class="mt-5">
   <app-student-create *ngIf="showDialog()" [showDialog]="showDialog()" (onClose)="isCreatedStudent.set(false)"></app-student-create>
 
-  <p-toolbar styleClass="mb-2">
+
+  <app-student-filter (listStudents)="listStudents($event)"></app-student-filter>
+
+  <p-toolbar styleClass="mb-2 mt-2">
     <ng-template #start>
       <p-button class="m-2" icon="pi pi-download" severity="info" (onClick)="exportUser()"
-                pTooltip="Descargar estudiantes en CSV" tooltipPosition="left"/>
+                pTooltip="Descargar estudiantes en CSV" tooltipPosition="left" [disabled]="!this.listStudent"/>
       <p-button class="m-2" icon="pi pi-plus" severity="success" (onClick)="createStudent()"
                 pTooltip="Registrar Estudiante" tooltipPosition="left"/>
     </ng-template>
-    <!--    <ng-template #start>-->
-    <!--      <p-button icon="pi pi-plus" class="mr-2" pTooltip="Crear nueva cuota" (click)="mostrarCrearCuota(true)"/>-->
-    <!--      <p-button severity="danger" icon="pi pi-trash"-->
-    <!--                pTooltip="Eliminar cuotas seleccionadas"-->
-    <!--                (click)="confirmacionEliminarCuotas()"-->
-    <!--                [disabled]="!cuotasSeleccionadasEliminar || !cuotasSeleccionadasEliminar.length"-->
-    <!--                outlined/>-->
-    <!--    </ng-template>-->
   </p-toolbar>
-
-  @let studentResponse = getStudentResponse$ | async ;
-  <p-table
+  <p-toast></p-toast>
+  <p-table #studentsTable
     [columns]=""
     [tableStyle]="{ 'min-width': '48rem' }"
-    [value]="studentResponse?.students ?? []"
+    [value]="this.students"
     showGridlines
     [paginator]="true"
     [showCurrentPageReport]="true"
-    [totalRecords]="studentResponse?.totalStudents ?? 0"
+    [totalRecords]="this.totalStudents"
     (onLazyLoad)="getStudents($event)"
     [rows]="studentsPerPage"
     [scrollable]="true"
@@ -77,13 +71,36 @@
     <ng-template #body let-student>
       <tr>
         <td>
-          <p-button
-            [rounded]="true"
-            [text]="true"
-            icon="pi pi-pencil"
-            severity="info"
-            pTooltip="Editar Estudiante"
-          ></p-button>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <p-button
+              [rounded]="true"
+              [text]="true"
+              [loading]="loadingOperation.value"
+              icon="pi pi-pencil"
+              severity="info"
+              pTooltip="Editar Estudiante"
+            ></p-button>
+            <p-button
+              [rounded]="true"
+              [text]="true"
+              [icon]="student.habilitado ? 'pi pi-ban': 'pi pi-check'"
+              [severity]="student.habilitado ? 'danger' : 'success'"
+              [loading]="loadingOperation.value"
+              [pTooltip]="student.habilitado ? 'Desactivar Estudiante': 'Activar Estudiante'"
+              (onClick)="changeStatusEnabled(student.codUsuario)"
+            ></p-button>
+            @if(!student.activo && student.habilitado) {
+              <p-button
+                [rounded]="true"
+                [text]="true"
+                icon="pi pi-envelope"
+                severity="contrast"
+                pTooltip="Reenviar correo"
+                [loading]="loadingOperation.value"
+                (onClick)="resendEmail(student.codUsuario)"
+              ></p-button>
+            }
+          </div>
         </td>
         <td>{{ student.cedula }}</td>
         <td>{{ student.nombres + ' ' + student.apellidos }}</td>
@@ -105,28 +122,22 @@
                  [severity]="student.habilitado ? 'success' : 'danger'"
                  [value]="student.habilitado ? 'Habilitado': 'Deshabilitado'"/>
         </td>
-
-        <!--        <td [style]="{'padding': '10px', 'text-align': 'left'}">-->
-        <!--          <p-tag [icon]="student.finalizado ? 'pi pi-check' : 'pi pi-times'"-->
-        <!--                 [severity]="student.finalizado ? 'success' : 'danger'"-->
-        <!--                 [value]="student.finalizado ? 'Finalizada': 'No finalizada'"/>-->
-        <!--        </td>-->
         <td [style]="{'padding': '10px', 'text-align': 'left'}">{{ student.fechaRegistro | date:UtilConst.DATE_FORMAT }}
         </td>
       </tr>
     </ng-template>
     <ng-template #loadingbody>
       <tr [style]="{height: '46px'}">
-        <td *ngFor="let _ of [{},{},{},{},{},{},{}]">
+        <td *ngFor="let _ of [{},{},{},{},{},{},{},{},{},{}]">
           <p-skeleton/>
         </td>
       </tr>
     </ng-template>
 
-    @if (!loadingStudents.value && studentResponse?.students?.length === 0) {
+    @if (!loadingStudents.value && this.students.length === 0) {
       <ng-template #emptymessage>
         <tr>
-          <td colspan="7" [style]="{'text-align': 'center'}">No existen estudiantes</td>
+          <td colspan="10" [style]="{'text-align': 'center'}">No existen estudiantes</td>
         </tr>
       </ng-template>
     }

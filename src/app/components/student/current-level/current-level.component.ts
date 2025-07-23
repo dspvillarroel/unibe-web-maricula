@@ -1,14 +1,12 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject} from '@angular/core';
 import {StudentService} from '@app/service/student.service';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {JsonPipe} from '@angular/common';
 import {OrganizationChart} from 'primeng/organizationchart';
 import {PrimeTemplate, TreeNode} from 'primeng/api';
 
 @Component({
   selector: 'app-current-level',
   imports: [
-    JsonPipe,
     OrganizationChart,
     PrimeTemplate
   ],
@@ -19,52 +17,54 @@ import {PrimeTemplate, TreeNode} from 'primeng/api';
 export class CurrentLevelComponent {
   private studentService = inject(StudentService);
 
-  protected readonly studentCurrenLevel$ = toSignal(
+  protected readonly studentCurrentLevel$ = toSignal(
     this.studentService.getCurrentLevel()
-  )
+  );
 
-  data: TreeNode[] = [
-    {
-      expanded: true,
-      type: 'person',
-      data: {
-        name: 'Software',
-        title: 'Malla Curricular'
-      },
-      children: [
-        {
+  protected readonly studentTreeData$ = computed((): TreeNode[] => {
+    const asignaturas = this.studentCurrentLevel$();
+
+    if (!asignaturas) return [];
+
+    const agrupado: { [tipo: string]: TreeNode } = {};
+
+    for (const asignatura of asignaturas) {
+      const tipo = asignatura.tipoAsignatura;
+
+      if (!agrupado[tipo]) {
+        agrupado[tipo] = {
           expanded: true,
-          type: 'person',
+          label: tipo,
+          type: 'subjectType',
           data: {
-            name: 'Anna Fali',
-            title: 'CMO'
+            code: tipo,
+            title: 'Asignaturas'
           },
-          children: [
-            {
-              label: 'Sales'
-            },
-            {
-              label: 'Marketing'
-            }
-          ]
-        },
-        {
-          expanded: true,
-          type: 'person',
-          data: {
-            name: 'Stephen Shaw',
-            title: 'CTO'
-          },
-          children: [
-            {
-              label: 'Development'
-            },
-            {
-              label: 'UI/UX Design'
-            }
-          ]
+          children: []
+        };
+      }
+
+      agrupado[tipo].children!.push({
+        type: 'person',
+        data: {
+          code: asignatura.codAsignatura,
+          title: asignatura.descripcion,
+          horas: asignatura.horas
         }
-      ]
+      });
     }
-  ];
+
+    return [
+      {
+        expanded: true,
+        type: 'person',
+        data: {
+          code: 'Software',
+          title: 'Malla Curricular',
+          horas: 800
+        },
+        children: Object.values(agrupado)
+      }
+    ];
+  });
 }

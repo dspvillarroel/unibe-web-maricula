@@ -1,27 +1,31 @@
-import {Component, computed, inject, signal, WritableSignal} from '@angular/core';
+import {Component, computed, DestroyRef, inject, input, signal, ViewChild, WritableSignal} from '@angular/core';
 import {AdministratorService} from '@app/service/administrator.service';
 import {Button} from 'primeng/button';
 import {Tooltip} from 'primeng/tooltip';
-import {AsyncPipe, DatePipe, NgForOf, NgIf} from '@angular/common';
+import {DatePipe, NgForOf, NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Skeleton} from 'primeng/skeleton';
-import {TableLazyLoadEvent, TableModule} from 'primeng/table';
+import {Table, TableLazyLoadEvent, TableModule} from 'primeng/table';
 import {Tag} from 'primeng/tag';
 import {Toolbar} from 'primeng/toolbar';
 import {UtilConst} from '@app/const/util-const';
-import {BehaviorSubject, finalize, Observable, of} from 'rxjs';
-import {StudentResponse} from '@app/model/administrator/response/student-response';
+import {BehaviorSubject, finalize, map, tap} from 'rxjs';
 import {PaginationConst} from '@app/const/paginator-const';
 import {StudentRequest} from '@app/model/administrator/request/student-request';
 import {StudentCreateComponent} from '@app/components/administrator/student-create/student-create.component';
 import {MessageService} from 'primeng/api';
+import {CodUsuarioRequest} from '@app/model/administrator/request/cod-usuario-request';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {Toast} from 'primeng/toast';
+import {StudentInfoResponse} from '@app/model/administrator/response/student-info-response';
+import {StudentFilterComponent} from '@app/components/administrator/student-filter/student-filter.component';
+import {StudentList} from '@app/model/student/student-list';
 
 @Component({
   selector: 'app-student-management',
   imports: [
     Button,
     Tooltip,
-    AsyncPipe,
     DatePipe,
     FormsModule,
     NgForOf,
@@ -30,7 +34,9 @@ import {MessageService} from 'primeng/api';
     Tag,
     Toolbar,
     StudentCreateComponent,
-    NgIf
+    NgIf,
+    Toast,
+    StudentFilterComponent
   ],
   standalone: true,
   templateUrl: './student-management.component.html',
@@ -38,16 +44,24 @@ import {MessageService} from 'primeng/api';
   providers: [MessageService]
 })
 export class StudentManagementComponent {
+  @ViewChild('studentsTable') studentsTable!: Table;
+
   private administratorService = inject(AdministratorService);
+  private messageService = inject(MessageService);
+  private destroyRef = inject(DestroyRef);
+
+  protected students: StudentInfoResponse[] = [];
+  protected totalStudents: number = 0;
 
   protected readonly studentsPerPage = PaginationConst.PAGE_SIZE_DEFAULT;
   protected loadingStudents = new BehaviorSubject<boolean>(false);
+  protected loadingOperation = new BehaviorSubject<boolean>(false);
   protected isCreatedStudent: WritableSignal<boolean> = signal(false);
-  protected getStudentResponse$: Observable<StudentResponse> = of();
+  protected listStudent!: StudentList;
   showDialog = computed(() => this.isCreatedStudent());
 
   protected exportUser() {
-    this.administratorService.exportStudents().subscribe(blob => {
+    this.administratorService.exportStudents(this.listStudent.codCareer, this.listStudent.level).subscribe(blob => {
       const a = document.createElement('a');
       const objectUrl = URL.createObjectURL(blob);
       a.href = objectUrl;
@@ -58,16 +72,77 @@ export class StudentManagementComponent {
   }
 
   protected getStudents(event: TableLazyLoadEvent) {
-    const pageNo = (event.first ?? 0) / this.studentsPerPage;
+    if (this.listStudent) {
+      const pageNo = (event.first ?? 0) / this.studentsPerPage;
 
-    const studentRequest: StudentRequest = {
-      pageNo: pageNo,
-      pageSize: this.studentsPerPage
+      const studentRequest: StudentRequest = {
+        codCarrera: this.listStudent.codCareer,
+        nivel: this.listStudent.level,
+        pageNo: pageNo,
+        pageSize: this.studentsPerPage
+      }
+
+      setTimeout(() => this.loadingStudents.next(true));
+
+      this.administratorService.getStudents(studentRequest)
+        .pipe(
+          finalize(() => this.loadingStudents.next(false)),
+          tap((response) => {
+            this.students = response.students;
+            this.totalStudents = response.totalStudents;
+          })
+        )
+        .subscribe();
+    }
+  }
+
+  protected listStudents(event: StudentList) {
+    this.listStudent = event;
+
+    this.studentsTable.reset();
+    this.getStudents({first: 0});
+  }
+
+  protected refreshStudents(codUsuario: number) {
+    this.students = this.students.map(s =>
+      s.codUsuario === codUsuario ? { ...s, habilitado: !s.habilitado } : s
+    );
+  }
+
+  protected resendEmail(codUsuario: number) {
+    const codUsuarioRequest: CodUsuarioRequest = {
+      codUsuario: codUsuario,
     }
 
-    setTimeout(() => this.loadingStudents.next(true));
-    this.getStudentResponse$ = this.administratorService.getStudents(studentRequest)
-      .pipe(finalize(() => this.loadingStudents.next(false)));
+    this.loadingOperation.next(true);
+    this.administratorService.resendEmail(codUsuarioRequest)
+      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loadingOperation.next(false)))
+      .subscribe({
+        next: () => {
+          this.messageService.add({severity: 'success', detail: 'Correo reenviado correctamente', summary: 'Exitoso'});
+        }
+      })
+  }
+
+  protected changeStatusEnabled(codUsuario: number) {
+    const codUsuarioRequest: CodUsuarioRequest = {
+      codUsuario: codUsuario,
+    }
+
+    this.loadingOperation.next(true);
+    this.administratorService.changeEnabled(codUsuarioRequest)
+      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loadingOperation.next(false)))
+      .subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            detail: 'Estado habilitado cambiado correctamente',
+            summary: 'Exitoso'
+          });
+        }
+      });
+
+    this.refreshStudents(codUsuario);
   }
 
   createStudent() {

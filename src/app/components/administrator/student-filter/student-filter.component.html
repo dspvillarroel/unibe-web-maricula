@@ -1,0 +1,39 @@
+<div class="card w-full flex justify-center h-200px">
+  <form [formGroup]="filterStudentForm"
+        class="flex flex-col md:flex-row gap-4 w-full max-w-screen-xl items-center justify-center text-center px-4">
+
+    <div class="flex flex-col w-full md:w-auto">
+      <div>
+        <label for="career" class="font-bold block mb-2">Carrera</label>
+        <p-select id="career" class="w-full md:w-72" formControlName="career"
+                  [options]="careersAvailable$() || []"
+                  optionLabel="carrera" optionValue="codCarrera"
+                  pTooltip="Seleccionar una carrera"
+                  (onChange)="changeCareer($event)">
+        </p-select>
+      </div>
+    </div>
+
+    <div class="flex flex-col w-full md:w-auto">
+      <div>
+        <label class="font-bold block mb-2">Nivel</label>
+        <p-inputnumber formControlName="level" mode="decimal" [showButtons]="true"
+                       [min]="1" [max]="maxLevel"
+                       [minFractionDigits]="0" [maxFractionDigits]="0"
+                       class="w-full">
+        </p-inputnumber>
+      </div>
+    </div>
+
+    <div class="mt-4 md:mt-6 w-full md:w-auto">
+      <p-button
+        icon="pi pi-search"
+        pTooltip="Buscar"
+        [style]="{ width: '5rem' }"
+        [disabled]="this.filterStudentForm.invalid"
+        (onClick)="filterStudents()"
+      >
+      </p-button>
+    </div>
+  </form>
+</div>
