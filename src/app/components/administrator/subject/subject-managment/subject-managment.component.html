@@ -1,1 +1,105 @@
-<p>subject-managment works!</p>
+<div class="mt-5">
+  <app-subject-create *ngIf="showDialog()" [showDialog]="showDialog()"
+                      (onClose)="refreshSubjects()"></app-subject-create>
+  <app-subject-edit *ngIf="showDialogEdit()" [showDialog]="showDialogEdit()" (onClose)="refreshSubjects()"
+                    [subjectToEdit]="this.subjectToEdit" [maxLevel]="maxLevel"
+  ></app-subject-edit>
+
+  <app-subject-filter (listStudents)="filterSubjects($event)"></app-subject-filter>
+
+  <p-confirm-dialog></p-confirm-dialog>
+
+  <p-toolbar styleClass="mb-2 mt-2">
+    <ng-template #start>
+      <p-button class="m-2" icon="pi pi-plus" severity="success" (onClick)="createSubject()"
+                pTooltip="Registrar Asignatura" tooltipPosition="left"/>
+    </ng-template>
+  </p-toolbar>
+  <p-toast></p-toast>
+  <p-table #subjectTable
+           [columns]=""
+           [tableStyle]="{ 'min-width': '48rem' }"
+           [value]="this.subjects"
+           showGridlines
+           [paginator]="true"
+           [showCurrentPageReport]="true"
+           [totalRecords]="this.totalSubjects"
+           (onLazyLoad)="listSubjects($event)"
+           [rows]="subjectsPerPage"
+           [scrollable]="true"
+           [lazy]="true"
+           [loading]="loadingSubjects.value"
+           [showLoader]="false"
+           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} asignaturas"
+           size="large">
+
+    <ng-template #header>
+      <tr>
+        <th [style]="{'width': '10%', 'background-color': '#0957ff', 'color': 'white'}">Acciones</th>
+        <th id="ci" [style]="{'width': '10%', 'background-color': '#0957ff', 'color': 'white'}">Código de Asignatura
+        </th>
+        <th id="fullname" [style]="{'width': '35%', 'background-color': '#0957ff', 'color': 'white'}">Asignatura
+        </th>
+        <th id="email"
+            [style]="{'width': '5%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Nivel
+        </th>
+        <th id="username"
+            [style]="{'width': '5%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Horas
+        </th>
+        <th id="career"
+            [style]="{'width': '15%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Tipo
+          Asignatura
+        </th>
+        <th id="modality"
+            [style]="{'width': '10%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">
+          Código Moodle
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-subject>
+      <tr>
+        <td>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <p-button
+              [rounded]="true"
+              [text]="true"
+              icon="pi pi-pencil"
+              severity="info"
+              pTooltip="Editar Asignatura"
+              (onClick)="editSubject(subject)"
+            ></p-button>
+            <p-button
+              [rounded]="true"
+              [text]="true"
+              icon="pi pi-ban"
+              severity="danger"
+              pTooltip="Eliminar Asignatura"
+              (onClick)="deleteSubject($event, subject.codAsignatura)"
+            ></p-button>
+          </div>
+        </td>
+        <td>{{ subject.codAsignatura }}</td>
+        <td>{{ subject.descripcion }}</td>
+        <td>{{ subject.nivel }}</td>
+        <td>{{ subject.horas }}</td>
+        <td>{{ subject.tipoAsignatura }}</td>
+        <td>{{ subject.codMoodle }}</td>
+      </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+      <tr [style]="{height: '46px'}">
+        <td *ngFor="let _ of [{},{},{},{},{},{},{}]">
+          <p-skeleton/>
+        </td>
+      </tr>
+    </ng-template>
+
+    @if (!loadingSubjects.value && this.subjects.length === 0) {
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7" [style]="{'text-align': 'center'}">No existen asignaturas</td>
+        </tr>
+      </ng-template>
+    }
+  </p-table>
+</div>

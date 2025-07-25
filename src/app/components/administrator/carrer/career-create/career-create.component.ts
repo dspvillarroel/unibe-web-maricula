@@ -74,7 +74,6 @@ export class CareerCreateComponent implements OnInit {
         this.messageService.add({severity: 'success', summary: 'Exitoso', detail: 'La carrera fue creada'});
         this.closeDialog();
       })
-
   }
 
   closeDialog() {

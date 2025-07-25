@@ -1,1 +1,132 @@
-<p>subject-edit works!</p>
+<p-toast></p-toast>
+<p-dialog header="Registrar Asignatura"
+          [modal]="true" [draggable]="false" [breakpoints]="{ '1199px': '100vw', '550px': '100vw' }"
+          [(visible)]="showDialog" position="top" [style]="{ width: '100rem' }" [closable]="false">
+  <ng-template #content>
+    <form [formGroup]="formSubject">
+      <div class="mt-5 mb-4">
+        <p-fieldset>
+          <ng-template #header>
+            <div class="flex items-center gap-2 px-2">
+              <em class="pi pi-file-check"></em>
+              <span class="font-bold">Carrera</span>
+            </div>
+          </ng-template>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label for="career" class="font-bold block mb-2">Carrera</label>
+              <input
+                pInputText
+                id="career"
+                formControlName="career"
+                maxLength="50"
+                autocomplete="off"
+                placeholder="POP404"
+                class="w-full p-inputtext"
+              />
+              @if (this.formSubject.get('career')?.hasError('required') && this.formSubject.get('career')?.touched) {
+                <small class="text-red-500 mt-1">La carrera es requerida.</small>
+              }
+            </div>
+            <div>
+              <label class="font-bold block mb-2">Semestre</label>
+              <p-inputnumber formControlName="level" mode="decimal" [showButtons]="true"
+                             [min]="1" [max]="maxLevel()"
+                             [minFractionDigits]="0" [maxFractionDigits]="0"
+                             class="w-full">
+              </p-inputnumber>
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <p-fieldset>
+        <ng-template #header>
+          <div class="flex items-center gap-2 px-2">
+            <em class="pi pi-user"></em>
+            <span class="font-bold">Informaci&oacute;n Asignatura</span>
+          </div>
+        </ng-template>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label for="code-subject" class="block text-sm font-bold mb-1">Código Asignatura</label>
+            <input
+              pInputText
+              id="code-subject"
+              formControlName="codSubject"
+              maxLength="50"
+              autocomplete="off"
+              placeholder="POP404"
+              class="w-full p-inputtext"
+            />
+            @if (this.formSubject.get('codSubject')?.hasError('required') && this.formSubject.get('codSubject')?.touched) {
+              <small class="text-red-500 mt-1">La código de asignatura es requerida.</small>
+            }
+          </div>
+          <div>
+            <label for="subject-type" class="block text-sm font-bold mb-1">Tipo de Asignatura</label>
+            <p-select id="subject-type" class="w-full md:w-76" formControlName="codSubjectType"
+                      [options]="subjectTypes$() || []"
+                      optionLabel="descripcion" optionValue="codTipoAsignatura"
+                      pTooltip="Seleccionar un tipo de asignatura">
+            </p-select>
+            @if (this.formSubject.get('codSubjectType')?.hasError('required') && this.formSubject.get('codSubjectType')?.touched) {
+              <small class="text-red-500 mt-1 block">El tipo de asignatura es requerido.</small>
+            }
+          </div>
+          <div>
+            <label for="subject" class="block text-sm font-bold mb-1">Asignatura</label>
+            <input
+              pInputText
+              id="subject"
+              formControlName="subject"
+              maxLength="255"
+              autocomplete="off"
+              placeholder="Prácticas Laborales I"
+              class="w-full p-inputtext"
+            />
+            @if (this.formSubject.get('subject')?.hasError('required') && this.formSubject.get('subject')?.touched) {
+              <small class="text-red-500 mt-1">El nombre de asignatura es requerido.</small>
+            }
+          </div>
+
+          <div>
+            <label for="hours" class="block text-sm font-bold mb-1">Horas</label>
+            <input
+              pInputText
+              id="hours"
+              formControlName="hours"
+              autocomplete="off"
+              pKeyFilter="num"
+              placeholder="96"
+              class="w-full p-inputtext"
+            />
+            @if (this.formSubject.get('hours')?.hasError('required') && this.formSubject.get('hours')?.touched) {
+              <small class="text-red-500 mt-1">Las horas son requeridas.</small>
+            }
+          </div>
+          <div>
+            <label for="moodle-code" class="block text-sm font-bold mb-1">Código de Moodle</label>
+            <input
+              pInputText
+              id="moodle-code"
+              formControlName="codMoodle"
+              autocomplete="off"
+              pKeyFilter="num"
+              placeholder="1"
+              class="w-full p-inputtext"
+            />
+            @if (this.formSubject.get('codMoodle')?.hasError('required') && this.formSubject.get('codMoodle')?.touched) {
+              <small class="text-red-500 mt-1">El código de moodle es requerido.</small>
+            }
+          </div>
+        </div>
+      </p-fieldset>
+
+      <div class="text-center mt-8">
+        <p-button class="m-2" label="Cancelar" icon="pi pi-times" styleClass="p-button-danger" (onClick)="closeDialog()"/>
+        <p-button class="m-2" label="Actualizar" styleClass="p-button-info" icon="pi pi-check" (onClick)="saveSubject()"/>
+      </div>
+    </form>
+  </ng-template>
+</p-dialog>

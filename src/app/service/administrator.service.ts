@@ -10,6 +10,9 @@ import {CodUsuarioRequest} from '@app/model/administrator/request/cod-usuario-re
 import {CarreraPageResponse} from '@app/model/career/carrera-page-response';
 import {ModalityResponse} from '@app/model/modality/modality-response';
 import {CareerRequest} from '@app/model/career/career-request';
+import {SubjectResponse} from '@app/model/subject/subject-response';
+import {SubjectTypeResponse} from '@app/model/subject-type/subject-type-response';
+import {SubjectRequest} from '@app/model/subject/subject-request';
 
 @Injectable({
   providedIn: 'root'
@@ -74,5 +77,29 @@ export class AdministratorService {
 
   updateCareer(careerRequest: CareerRequest, codCareer: number) {
     return this.http.put<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/career/${codCareer}`, careerRequest);
+  }
+
+  getSubjects(codCareer: number, level: number, pageNo: number, pageSize: number) {
+    const params = new HttpParams()
+      .set('pageNo', pageNo)
+      .set('pageSize', pageSize);
+
+    return this.http.get<SubjectResponse>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subjects/${codCareer}/nivel/${level}`, {params});
+  }
+
+  getSubjectTypes() {
+    return this.http.get<SubjectTypeResponse[]>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subject-type`);
+  }
+
+  createSubject(subjectRequest: SubjectRequest) {
+    return this.http.post<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subject`, subjectRequest);
+  }
+
+  updateSubject(codSubject: string, subjectRequest: SubjectRequest) {
+    return this.http.put<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subject/${codSubject}`, subjectRequest);
+  }
+
+  deleteSubject(codSubject: string) {
+    return this.http.delete<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subject/${codSubject}`);
   }
 }
