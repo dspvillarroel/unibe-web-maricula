@@ -12,14 +12,15 @@ import {UtilConst} from '@app/const/util-const';
 import {BehaviorSubject, finalize, map, tap} from 'rxjs';
 import {PaginationConst} from '@app/const/paginator-const';
 import {StudentRequest} from '@app/model/administrator/request/student-request';
-import {StudentCreateComponent} from '@app/components/administrator/student-create/student-create.component';
+import {StudentCreateComponent} from '@app/components/administrator/student/student-create/student-create.component';
 import {MessageService} from 'primeng/api';
 import {CodUsuarioRequest} from '@app/model/administrator/request/cod-usuario-request';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Toast} from 'primeng/toast';
 import {StudentInfoResponse} from '@app/model/administrator/response/student-info-response';
-import {StudentFilterComponent} from '@app/components/administrator/student-filter/student-filter.component';
+import {StudentFilterComponent} from '@app/components/administrator/student/student-filter/student-filter.component';
 import {StudentList} from '@app/model/student/student-list';
+import {StudentEditComponent} from '@app/components/administrator/student/student-edit/student-edit.component';
 
 @Component({
   selector: 'app-student-management',
@@ -36,7 +37,8 @@ import {StudentList} from '@app/model/student/student-list';
     StudentCreateComponent,
     NgIf,
     Toast,
-    StudentFilterComponent
+    StudentFilterComponent,
+    StudentEditComponent
   ],
   standalone: true,
   templateUrl: './student-management.component.html',
@@ -57,8 +59,11 @@ export class StudentManagementComponent {
   protected loadingStudents = new BehaviorSubject<boolean>(false);
   protected loadingOperation = new BehaviorSubject<boolean>(false);
   protected isCreatedStudent: WritableSignal<boolean> = signal(false);
+  protected isEditingStudent: WritableSignal<boolean> = signal(false);
   protected listStudent!: StudentList;
-  showDialog = computed(() => this.isCreatedStudent());
+  protected showDialog = computed(() => this.isCreatedStudent());
+  protected showDialogEdit = computed(() => this.isEditingStudent());
+  protected studentToEdit!: StudentInfoResponse;
 
   protected exportUser() {
     this.administratorService.exportStudents(this.listStudent.codCareer, this.listStudent.level).subscribe(blob => {
@@ -145,8 +150,13 @@ export class StudentManagementComponent {
     this.refreshStudents(codUsuario);
   }
 
-  createStudent() {
+  protected createStudent() {
     this.isCreatedStudent.set(true);
+  }
+
+  protected editStudent(student: StudentInfoResponse) {
+    this.studentToEdit = student;
+    this.isEditingStudent.set(true);
   }
 
   protected readonly UtilConst = UtilConst;

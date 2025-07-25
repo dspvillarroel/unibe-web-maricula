@@ -1,0 +1,169 @@
+<p-toast></p-toast>
+<p-dialog header="Editar Estudiante"
+          [modal]="true" [draggable]="false" [breakpoints]="{ '1199px': '100vw', '550px': '100vw' }"
+          [(visible)]="showDialog" position="top" [style]="{ width: '100rem' }" [closable]="false">
+  <ng-template #content>
+    <form [formGroup]="formStudent">
+      <p-fieldset>
+        <ng-template #header>
+          <div class="flex items-center gap-2 px-2">
+            <em class="pi pi-user"></em>
+            <span class="font-bold">Informaci&oacute;n Estudiante</span>
+          </div>
+        </ng-template>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label for="identification" class="block text-sm font-bold mb-1">Identificaci&oacute;n</label>
+            <input
+              pInputText
+              id="identification"
+              [value]="studentToEdit().cedula"
+              disabled
+              maxLength="13"
+              autocomplete="off"
+              pKeyFilter="alphanum"
+              placeholder="1752XXXXXX"
+              class="w-full p-inputtext"
+            />
+            @if (this.formStudent.get('identification')?.hasError('required') && this.formStudent.get('identification')?.touched) {
+              <small class="text-red-500 mt-1">La identificación es requerida.</small>
+            }
+          </div>
+
+          <div>
+            <label for="name" class="block text-sm font-bold mb-1">Nombres</label>
+            <input
+              pInputText
+              id="name"
+              formControlName="name"
+              maxLength="100"
+              autocomplete="off"
+              [pKeyFilter]="alphabetic"
+              placeholder="Italo Luis"
+              class="w-full p-inputtext"
+            />
+            @if (this.formStudent.get('name')?.hasError('required') && this.formStudent.get('name')?.touched) {
+              <small class="text-red-500 mt-1">El nombre es requerido.</small>
+            }
+          </div>
+          <div>
+            <label for="lastname" class="block text-sm font-bold mb-1">Apellidos</label>
+            <input
+              pInputText
+              id="lastname"
+              formControlName="lastname"
+              maxLength="100"
+              autocomplete="off"
+              [pKeyFilter]="alphabetic"
+              placeholder="D&iacute;az Iza"
+              class="w-full p-inputtext"
+            />
+            @if (this.formStudent.get('lastname')?.hasError('required') && this.formStudent.get('lastname')?.touched) {
+              <small class="text-red-500 mt-1">El apellido es requerido.</small>
+            }
+          </div>
+        </div>
+      </p-fieldset>
+
+      <div class="mt-5">
+        <p-fieldset>
+          <ng-template #header>
+            <div class="flex items-center gap-2 px-2">
+              <em class="pi pi-graduation-cap"></em>
+              <span class="font-bold">Informaci&oacute;n Universidad</span>
+            </div>
+          </ng-template>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label for="email" class="font-bold block mb-2">Correo</label>
+              <input type="text" pInputText id="email" formControlName="email"
+                     autocomplete="off" maxlength="255" placeholder="italo.diaz@unibe.ec" class="w-full"/>
+              @if (this.formStudent.get('email')?.hasError('required') && this.formStudent.get('email')?.touched) {
+                <small class="text-red-500 mt-1">El email es requerido.</small>
+              }
+            </div>
+            <div>
+              <label for="username" class="font-bold block mb-2">Nombre de Usuario</label>
+              <input pInputText id="username" formControlName="username"
+                     maxlength="100" autocomplete="off" placeholder="italodiaz" class="w-full"/>
+              @if (this.formStudent.get('username')?.hasError('required') && this.formStudent.get('username')?.touched) {
+                <small class="text-red-500 mt-1">El nombre de usuario es requerido.</small>
+              }
+            </div>
+            <div>
+              <label class="font-bold block mb-2">Fecha Nacimiento</label>
+              <p-datepicker
+                class="w-full md:w-64"
+                formControlName="bornDate"
+                [readonlyInput]="true"
+                [dateFormat]="UtilConst.DATE_FORMAT_PICKER">
+              </p-datepicker>
+              @if (this.formStudent.get('bornDate')?.hasError('required') && this.formStudent.get('bornDate')?.touched) {
+                <small class="text-red-500 mt-1">El género es requerido.</small>
+              }
+            </div>
+            <div>
+              <label for="genre" class="font-bold block mb-2">G&eacute;nero</label>
+              <p-dropdown id="genre" class="w-full" formControlName="genre"
+                          [options]="genresAvailable$() || []"
+                          optionLabel="genero" optionValue="codGenero">
+              </p-dropdown>
+              @if (this.formStudent.get('genre')?.hasError('required') && this.formStudent.get('genre')?.touched) {
+                <small class="text-red-500 mt-1">El género es requerido.</small>
+              }
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="mt-5 mb-4">
+        <p-fieldset>
+          <ng-template #header>
+            <div class="flex items-center gap-2 px-2">
+              <em class="pi pi-file-check"></em>
+              <span class="font-bold">Carrera</span>
+            </div>
+          </ng-template>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label for="career" class="font-bold block mb-2">Carrera</label>
+              <p-dropdown id="career" class="w-full" formControlName="career"
+                          [options]="this.carreras"
+                          optionLabel="carrera" optionValue="codCarrera"
+                          (onChange)="changeCareer($event)">
+              </p-dropdown>
+              @if (this.formStudent.get('career')?.hasError('required') && this.formStudent.get('career')?.touched) {
+                <small class="text-red-500 mt-1">La carrera es requerida.</small>
+              }
+            </div>
+            <div>
+              <label class="font-bold block mb-2">Nivel</label>
+              <p-inputnumber formControlName="level" mode="decimal" [showButtons]="true"
+                             [min]="1" [max]="maxLevel"
+                             [minFractionDigits]="0" [maxFractionDigits]="0"
+                             class="w-full">
+              </p-inputnumber>
+            </div>
+            <div>
+              <label for="modality" class="font-bold block mb-2">Modalidad</label>
+              <p-dropdown id="modality" class="w-full" formControlName="modality"
+                          [options]="modalities"
+                          optionValue="codModalidad" optionLabel="modalidad">
+              </p-dropdown>
+              @if (this.formStudent.get('modality')?.hasError('required') && this.formStudent.get('modality')?.touched) {
+                <small class="text-red-500 mt-1">La modalidad es requerida.</small>
+              }
+            </div>
+          </div>
+        </p-fieldset>
+      </div>
+
+      <div class="text-center mt-8">
+        <p-button class="m-2" label="Cancelar" icon="pi pi-times" styleClass="p-button-danger"
+                  (onClick)="closeDialog()" [loading]="isCreatingUser"/>
+        <p-button class="m-2"  styleClass="p-button-info" label="Actualizar" icon="pi pi-check" [loading]="isCreatingUser"
+                  (onClick)="updateStudent()"/>
+      </div>
+    </form>
+  </ng-template>
+</p-dialog>

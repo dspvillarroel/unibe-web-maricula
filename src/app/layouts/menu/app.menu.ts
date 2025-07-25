@@ -28,8 +28,10 @@ export class AppMenu {
       {
         label: 'Administración',
         items: [
-          {label: 'Nivel Actual', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['current-level']},
-          {label: 'Manejo de Estudiantes', icon: 'pi pi-fw pi-table', routerLink: ['student-management']}
+          {label: 'Nivel Actual', icon: 'pi pi-circle', class: 'rotated-icon', routerLink: ['current-level']},
+          {label: 'Estudiantes', icon: 'pi pi-user', routerLink: ['student-management']},
+          {label: 'Carreras', icon: 'pi pi-graduation-cap', routerLink: ['career-management']},
+          {label: 'Asignaturas', icon: 'pi pi-fw pi-table', routerLink: ['subject-management']},
         ]
       },
     ];

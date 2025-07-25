@@ -1,0 +1,76 @@
+<p-dialog header="Editar Carrera"
+          [modal]="true" [draggable]="false" [breakpoints]="{ '1199px': '100vw', '550px': '100vw' }"
+          [(visible)]="showDialog" position="top" [style]="{ width: '100rem' }" [closable]="false">
+
+  <ng-template #content>
+    <form [formGroup]="formCareer">
+      <p-fieldset>
+        <ng-template #header>
+          <div class="flex items-center gap-2 px-2">
+            <em class="pi pi-caret-up"></em>
+            <span class="font-bold">Informaci&oacute;n Carrera</span>
+          </div>
+        </ng-template>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <label for="career" class="block text-sm font-bold mb-1">Nombre de Carrera</label>
+            <input
+              pInputText
+              id="career"
+              formControlName="career"
+              maxLength="100"
+              autocomplete="off"
+              placeholder="Ingeniería en ..."
+              class="w-full p-inputtext"
+            />
+            @if (this.formCareer.get('career')?.hasError('required') && this.formCareer.get('career')?.touched) {
+              <small class="text-red-500 mt-1">El nombre de carrera es requerido.</small>
+            }
+          </div>
+          <div>
+            <label for="career" class="block text-sm font-bold mb-1">Modalidades</label>
+            <p-multiselect [options]="modalities$() ?? []"
+                           formControlName="modality" optionLabel="descripcion" optionValue="codModalidad" placeholder="Seleccionar modalidades"
+                           styleClass="w-full md:w-70"></p-multiselect>
+
+            @if (this.formCareer.get('modality')?.hasError('required') && this.formCareer.get('modality')?.touched) {
+              <small class="text-red-500 mt-1 block">Seleccione al menos una modalidad.</small>
+            }
+          </div>
+          <div>
+            <label class="font-bold block mb-2">Niveles</label>
+            <p-inputnumber formControlName="level" mode="decimal" [showButtons]="true"
+                           [min]="1" [max]="20"
+                           [minFractionDigits]="0" [maxFractionDigits]="0"
+                           class="w-full">
+            </p-inputnumber>
+            @if (this.formCareer.get('level')?.hasError('required') && this.formCareer.get('level')?.touched) {
+              <small class="text-red-500 mt-1">El número de niveles es requerido.</small>
+            }
+          </div>
+          <div>
+            <label for="ciclo" class="block text-sm font-bold mb-1">Ciclo</label>
+            <input
+              pInputText
+              id="ciclo"
+              formControlName="ciclo"
+              maxLength="15"
+              autocomplete="off"
+              placeholder="2025 - 2026"
+              class="w-full p-inputtext"
+            />
+            @if (this.formCareer.get('ciclo')?.hasError('required') && this.formCareer.get('ciclo')?.touched) {
+              <small class="text-red-500 mt-1">El ciclo es requerido.</small>
+            }
+          </div>
+        </div>
+      </p-fieldset>
+      <div class="text-center mt-8">
+        <p-button class="m-2" label="Cancelar" icon="pi pi-times" styleClass="p-button-danger"
+                  (onClick)="closeDialog()" [loading]="isCreatingCareer"/>
+        <p-button class="m-2" label="Actualizar" styleClass="p-button-info" icon="pi pi-check" [loading]="isCreatingCareer" (onClick)="saveCareer()"/>
+      </div>
+    </form>
+  </ng-template>
+</p-dialog>

@@ -9,5 +9,9 @@ export interface StudentInfoResponse {
   activo: boolean;
   cedula: string;
   carrera: string;
+  codCarrera: number;
+  codGenero: string;
+  nivel: number;
   modalidad: string;
+  codModalidad: number;
 }

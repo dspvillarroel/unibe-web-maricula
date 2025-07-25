@@ -1,8 +1,10 @@
 <div class="mt-5">
   <app-student-create *ngIf="showDialog()" [showDialog]="showDialog()" (onClose)="isCreatedStudent.set(false)"></app-student-create>
+  <app-student-edit *ngIf="showDialogEdit()" [showDialog]="showDialogEdit()" (onClose)="isEditingStudent.set(false)"
+                    [studentToEdit]="this.studentToEdit"
+  ></app-student-edit>
 
-
-  <app-student-filter (listStudents)="listStudents($event)"></app-student-filter>
+  <app-student-filter (listStudents)="listStudents($event)" ></app-student-filter>
 
   <p-toolbar styleClass="mb-2 mt-2">
     <ng-template #start>
@@ -27,12 +29,7 @@
     [lazy]="true"
     [loading]="loadingStudents.value"
     [showLoader]="false"
-    editMode="row"
-    rowGroupMode="subheader"
-    dataKey="codCuota"
-    groupRowsBy="codCuota"
     currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} estudiantes"
-    rowExpandMode="single"
     size="large">
 
     <ng-template #header>
@@ -79,6 +76,7 @@
               icon="pi pi-pencil"
               severity="info"
               pTooltip="Editar Estudiante"
+              (onClick)="editStudent(student)"
             ></p-button>
             <p-button
               [rounded]="true"

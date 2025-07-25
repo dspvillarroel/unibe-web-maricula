@@ -9,7 +9,6 @@ import {InputNumber} from 'primeng/inputnumber';
 import {KeyFilter} from 'primeng/keyfilter';
 import {Dialog} from 'primeng/dialog';
 import {ModalityInfoResponse} from '@app/model/modality/modality-info-response';
-import {CuotaConst} from '@app/const/cuota-const';
 import {Fieldset} from 'primeng/fieldset';
 import {MessageService} from 'primeng/api';
 import {UserInfo} from '@app/model/user/user-info';
@@ -18,6 +17,7 @@ import {DatePicker} from 'primeng/datepicker';
 import {UtilConst} from '@app/const/util-const';
 import {finalize} from 'rxjs';
 import {SeverityEnum} from '@app/enum/severity-enum';
+import {Toast} from 'primeng/toast';
 
 @Component({
   selector: 'app-student-create',
@@ -32,6 +32,7 @@ import {SeverityEnum} from '@app/enum/severity-enum';
     Dialog,
     Fieldset,
     DatePicker,
+    Toast,
   ],
   standalone: true,
   templateUrl: './student-create.component.html',
@@ -51,7 +52,6 @@ export class StudentCreateComponent implements OnInit {
   protected careersAvailable$ = toSignal(this.administratorService.getCareer());
 
   protected formStudent!: FormGroup;
-  protected readonly Cuota = CuotaConst;
   protected readonly UtilConst = UtilConst;
   protected modalities: ModalityInfoResponse[] = [];
   protected maxLevel = 1;

@@ -1,12 +1,15 @@
 import {inject, Injectable} from '@angular/core';
 import {environment} from '@env/environment';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {StudentResponse} from '@app/model/administrator/response/student-response';
 import {GenreResponse} from '@app/model/genre/genre-response';
 import {CarreraInfoResponse} from '@app/model/career/carrera-info-response';
 import {StudentRequest} from '@app/model/administrator/request/student-request';
 import {StudentRegisterRequest} from '@app/model/student/student-register-request';
 import {CodUsuarioRequest} from '@app/model/administrator/request/cod-usuario-request';
+import {CarreraPageResponse} from '@app/model/career/carrera-page-response';
+import {ModalityResponse} from '@app/model/modality/modality-response';
+import {CareerRequest} from '@app/model/career/career-request';
 
 @Injectable({
   providedIn: 'root'
@@ -37,8 +40,16 @@ export class AdministratorService {
     return this.http.get<CarreraInfoResponse[]>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/careers`);
   }
 
+  getModalities() {
+    return this.http.get<ModalityResponse[]>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/modalities`);
+  }
+
   registerStudent(studentRequest: StudentRegisterRequest) {
     return this.http.post<void>(`${this.apiBaseSecurity}${this.securityContext}/api/v1/students`, studentRequest);
+  }
+
+  updateStudent(studentRequest: StudentRegisterRequest, codUsuario: number) {
+    return this.http.put<void>(`${this.apiBaseSecurity}${this.securityContext}/api/v1/students/${codUsuario}`, studentRequest);
   }
 
   resendEmail(codUsuarioRequest: CodUsuarioRequest) {
@@ -47,5 +58,21 @@ export class AdministratorService {
 
   changeEnabled(codUsuarioRequest: CodUsuarioRequest) {
     return this.http.put<void>(`${this.apiBaseSecurity}${this.securityContext}/api/v1/administrators/enable-status`, codUsuarioRequest);
+  }
+
+  getCareersPage(pageNo: number, pageSize: number) {
+    const params = new HttpParams()
+      .set('pageNo', pageNo)
+      .set('pageSize', pageSize);
+
+    return this.http.get<CarreraPageResponse>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/careers-pagination`, {params});
+  }
+
+  createCareer(careerRequest: CareerRequest) {
+    return this.http.post<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/career`, careerRequest);
+  }
+
+  updateCareer(careerRequest: CareerRequest, codCareer: number) {
+    return this.http.put<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/career/${codCareer}`, careerRequest);
   }
 }

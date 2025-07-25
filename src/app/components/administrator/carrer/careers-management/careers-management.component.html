@@ -1,0 +1,90 @@
+<div class="mt-5">
+  <app-career-create *ngIf="showDialog()" [showDialog]="showDialog()" (onClose)="refreshCareers()"></app-career-create>
+  <app-career-edit *ngIf="showDialogEdit()" [showDialog]="showDialogEdit()" (onClose)="refreshCareers()"
+                    [careerToEdit]="this.careerToEdit"
+  ></app-career-edit>
+
+  <p-toolbar styleClass="mb-2 mt-2">
+    <ng-template #start>
+      <p-button class="m-2" icon="pi pi-plus" severity="success" (onClick)="createCareer()"
+                pTooltip="Registrar Carrera" tooltipPosition="left"/>
+    </ng-template>
+  </p-toolbar>
+  <p-toast></p-toast>
+  <p-table #careerTable
+           [columns]=""
+           [tableStyle]="{ 'min-width': '48rem' }"
+           [value]="this.careers"
+           showGridlines
+           [paginator]="true"
+           [showCurrentPageReport]="true"
+           [totalRecords]="this.totalCareers"
+           (onLazyLoad)="getCareers($event)"
+           [rows]="careersPerPage"
+           [scrollable]="true"
+           [lazy]="true"
+           [loading]="loadingCareers.value"
+           [showLoader]="false"
+           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} carreras"
+           size="large">
+
+    <ng-template #header>
+      <tr>
+        <th id="actions" [style]="{'width': '10%', 'background-color': '#0957ff', 'color': 'white'}">Acciones</th>
+        <th id="career" [style]="{'width': '50%', 'background-color': '#0957ff', 'color': 'white'}">Carrera</th>
+        <th id="level" [style]="{'width': '5%', 'background-color': '#0957ff', 'color': 'white'}">Niveles
+        </th>
+        <th id="modality"
+            [style]="{'width': '20%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Modalidades
+        </th>
+        <th id="ciclo"
+            [style]="{'width': '25%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Ciclo
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-career>
+      <tr>
+        <td>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <p-button
+              [rounded]="true"
+              [text]="true"
+              icon="pi pi-pencil"
+              severity="info"
+              pTooltip="Editar Carrera"
+              (onClick)="editCareer(career)"
+            ></p-button>
+          </div>
+        </td>
+        <td>{{ career.carrera }}</td>
+        <td>{{ career.niveles }}</td>
+
+        <td>
+          <ng-container *ngFor="let modalidad of career.modalidades">
+            <p-tag class="m-1"
+              [severity]="modalidad.modalidad === 'Diurno' ? 'warn' : 'contrast'"
+              [value]="modalidad.modalidad"
+            ></p-tag>
+          </ng-container>
+        </td>
+        <td>{{ career.ciclo }}</td>
+
+      </tr>
+    </ng-template>
+    <ng-template #loadingbody>
+      <tr [style]="{height: '46px'}">
+        <td *ngFor="let _ of [{},{},{},{}]">
+          <p-skeleton/>
+        </td>
+      </tr>
+    </ng-template>
+
+    @if (!loadingCareers.value && this.careers.length === 0) {
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="4" [style]="{'text-align': 'center'}">No existen carreras</td>
+        </tr>
+      </ng-template>
+    }
+  </p-table>
+</div>
