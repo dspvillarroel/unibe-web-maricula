@@ -105,7 +105,7 @@ export class StudentCreateComponent implements OnInit {
       acceptUseOfData: [true, Validators.required],
       approval: [false, Validators.required],
       approvalSite: [''],
-      semestersApproval: [{value: [], disabled: this.isNotCareerSelected}, Validators.required]
+      semestersApproval: [{value: [], disabled: this.isNotCareerSelected}]
     });
 
     this.formStudent.get('identification')?.valueChanges.subscribe(value => {
