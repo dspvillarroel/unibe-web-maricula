@@ -50,7 +50,8 @@ export class CurrentLevelComponent {
           code: asignatura.codAsignatura,
           title: asignatura.descripcion,
           horas: asignatura.horas,
-          credits: asignatura.creditos
+          credits: asignatura.creditos,
+          semester: asignatura.nivel
         }
       });
     }

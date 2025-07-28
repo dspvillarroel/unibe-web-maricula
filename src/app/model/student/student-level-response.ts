@@ -5,4 +5,5 @@ export interface StudentLevelResponse {
   carrera: string;
   tipoAsignatura: string;
   creditos: number;
+  nivel: number;
 }
