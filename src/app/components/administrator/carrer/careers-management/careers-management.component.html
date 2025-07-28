@@ -1,3 +1,5 @@
+<h3 class="text-center">Administración de Carreras</h3>
+
 <div class="mt-5">
   <app-career-create *ngIf="showDialog()" [showDialog]="showDialog()" (onClose)="refreshCareers()"></app-career-create>
   <app-career-edit *ngIf="showDialogEdit()" [showDialog]="showDialogEdit()" (onClose)="refreshCareers()"

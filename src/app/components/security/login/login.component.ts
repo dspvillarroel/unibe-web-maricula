@@ -55,6 +55,11 @@ export class LoginComponent implements OnInit {
     this.securityService.login(loginRequest).subscribe(
       response => {
         localStorage.setItem('token', response.accessToken);
+
+        if (!response.isEnabled) {
+          this.securityService.activateAccount().subscribe();
+        }
+
         this.router.navigateByUrl("dashboard")
       }
     )

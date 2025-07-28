@@ -13,6 +13,8 @@ import {CareerRequest} from '@app/model/career/career-request';
 import {SubjectResponse} from '@app/model/subject/subject-response';
 import {SubjectTypeResponse} from '@app/model/subject-type/subject-type-response';
 import {SubjectRequest} from '@app/model/subject/subject-request';
+import {SubjectApprovalRequest} from '@app/model/subject/subject-approval-request';
+import {SubjectApprovalResponse} from '@app/model/subject/subject-approval-response';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +36,12 @@ export class AdministratorService {
     const url = `${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/students/csv/carrera/${codCareer}/nivel/${level}`;
     return this.http.get(url, {responseType: 'blob'});
   }
+
+  exportApprovalStudent(codEstudent: number) {
+    const url = `${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/students/csv/estudiante/${codEstudent}`;
+    return this.http.get(url, {responseType: 'blob'});
+  }
+
 
   getGenres() {
     return this.http.get<GenreResponse[]>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/genres`);
@@ -101,5 +109,13 @@ export class AdministratorService {
 
   deleteSubject(codSubject: string) {
     return this.http.delete<void>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subject/${codSubject}`);
+  }
+
+  getApprovalSubjects(subjectApprovalRequest: SubjectApprovalRequest) {
+    return this.http.post<SubjectApprovalResponse[]>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subject-approval`, subjectApprovalRequest);
+  }
+
+  getSubjectsPerStudent(codStudent: number) {
+    return this.http.get<SubjectApprovalResponse[]>(`${this.apiBaseMatricula}${this.matriculaContext}/api/v1/administrators/subjects/student/${codStudent}`);
   }
 }

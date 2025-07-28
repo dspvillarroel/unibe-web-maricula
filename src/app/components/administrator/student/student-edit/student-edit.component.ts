@@ -14,12 +14,19 @@ import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {ModalityInfoResponse} from '@app/model/modality/modality-info-response';
 import {UserInfo} from '@app/model/user/user-info';
 import {StudentRegisterRequest} from '@app/model/student/student-register-request';
-import {finalize, tap} from 'rxjs';
+import {finalize} from 'rxjs';
 import {SeverityEnum} from '@app/enum/severity-enum';
 import {UtilConst} from '@app/const/util-const';
 import {StudentInfoResponse} from '@app/model/administrator/response/student-info-response';
 import {CarreraInfoResponse} from '@app/model/career/carrera-info-response';
 import {Toast} from 'primeng/toast';
+import {Checkbox} from "primeng/checkbox";
+import {MultiSelect, MultiSelectChangeEvent} from "primeng/multiselect";
+import {PickList} from "primeng/picklist";
+import {Select} from "primeng/select";
+import {Step, StepList, StepPanel, StepPanels, Stepper} from "primeng/stepper";
+import {SubjectApprovalRequest} from '@app/model/subject/subject-approval-request';
+import {SubjectApprovalResponse} from '@app/model/subject/subject-approval-response';
 
 @Component({
   selector: 'app-student-edit',
@@ -33,7 +40,16 @@ import {Toast} from 'primeng/toast';
     InputText,
     KeyFilter,
     ReactiveFormsModule,
-    Toast
+    Toast,
+    Checkbox,
+    MultiSelect,
+    PickList,
+    Select,
+    Step,
+    StepList,
+    StepPanel,
+    StepPanels,
+    Stepper
   ],
   standalone: true,
   templateUrl: './student-edit.component.html',
@@ -60,21 +76,29 @@ export class StudentEditComponent implements OnInit {
   protected isNotCareerSelected = true;
   protected isCreatingUser = false;
   protected originalDataForm: any;
+  protected semestersApproval!: number[];
+  protected approvalSubjects: SubjectApprovalResponse[] = [];
+  protected targetApprovalSubjects: SubjectApprovalResponse[] = [];
 
   ngOnInit() {
     const studentToEdit = this.studentToEdit();
     this.getCareersAndSetCurrent(studentToEdit.codCarrera);
 
     this.formStudent = this.fb.group({
+      identification: [{value: studentToEdit.cedula, disabled: true}, Validators.required],
       name: [studentToEdit.nombres, Validators.required],
       lastname: [studentToEdit.apellidos, Validators.required],
       genre: [studentToEdit.codGenero, Validators.required],
       career: [studentToEdit.codCarrera, Validators.required],
       level: [{value: studentToEdit.nivel, disabled: false}, Validators.required],
       modality: [{value: studentToEdit.codModalidad, disabled: false}, Validators.required],
-      bornDate: [new Date(studentToEdit.fechaRegistro), Validators.required],
-      username: [studentToEdit.usuario, Validators.required],
+      bornDate: [new Date(studentToEdit.fechaNacimiento), Validators.required],
+      username: [{value: studentToEdit.usuario, disabled: true}, Validators.required],
       email: [studentToEdit.correo, Validators.required],
+      acceptUseOfData: [true, Validators.required],
+      approval: [studentToEdit.homologacion, Validators.required],
+      approvalSite: [studentToEdit.lugarHomologacion],
+      semestersApproval: [[]]
     });
 
     this.originalDataForm = this.formStudent.getRawValue();
@@ -87,10 +111,38 @@ export class StudentEditComponent implements OnInit {
     });
   }
 
+  private getCurrentSubjects(codEstudiante: number) {
+    this.administratorService.getSubjectsPerStudent(codEstudiante).subscribe((response) => {
+      this.targetApprovalSubjects = response;
+    })
+  }
+
   private setModalities(codCareer: number) {
     const careerSelected = this.carreras.find(c => c.codCarrera === codCareer)!;
     this.modalities = careerSelected.modalidades;
     this.maxLevel = careerSelected.niveles;
+    this.semestersApproval = Array.from({length: this.maxLevel}, (_, i) => i + 1);
+  }
+
+  protected getApprovalSubjects(event: MultiSelectChangeEvent) {
+    const semestersApproval = event.value;
+
+    if (semestersApproval.length > 0) {
+      const approvalSubjectRequest: SubjectApprovalRequest = {
+        codCarrera: this.formStudent.value.career,
+        semestres: semestersApproval
+      }
+
+      this.administratorService.getApprovalSubjects(approvalSubjectRequest).subscribe((response) => {
+        if (this.targetApprovalSubjects.length === 0 && response.length > 0) {
+          this.approvalSubjects = response;
+        } else {
+          this.approvalSubjects = response.filter((subject) => !this.targetApprovalSubjects.map((subject) => subject.codAsignatura).includes(subject.codAsignatura));
+        }
+      })
+    } else {
+      this.approvalSubjects = [];
+    }
   }
 
   changeCareer(event: DropdownChangeEvent) {
@@ -104,6 +156,9 @@ export class StudentEditComponent implements OnInit {
   resetFieldOnChangeCareer() {
     this.formStudent.get('level')?.setValue(1);
     this.formStudent.get('modality')?.setValue('');
+
+    this.approvalSubjects = [];
+    this.targetApprovalSubjects = [];
   }
 
   updateStudent() {
@@ -113,17 +168,22 @@ export class StudentEditComponent implements OnInit {
       return;
     }
 
-
     if (this.formStudent.invalid) {
+      console.log(this.formStudent.errors)
       this.messageService.add({severity: 'error', summary: 'Error', detail: 'Validar los campos correctamente'});
       this.formStudent.markAllAsTouched();
+      return;
+    }
+
+    if (this.formStudent.value.approval && this.targetApprovalSubjects.length === 0) {
+      this.messageService.add({severity: 'error', summary: 'Error', detail: 'Se debe escoger al menos una materia cuando se realiza una homologación'});
       return;
     }
 
     const userInfo: UserInfo = {
       cedula: this.studentToEdit().cedula,
       correo: this.formStudent.value.email,
-      nombre: this.formStudent.value.username,
+      nombre: this.studentToEdit().cedula,
     }
 
     const studentRequest: StudentRegisterRequest = {
@@ -134,6 +194,10 @@ export class StudentEditComponent implements OnInit {
       nivel: this.formStudent.value.level,
       modalidad: this.formStudent.value.modality,
       fechaNacimiento: this.formStudent.value.bornDate,
+      homologacion: this.formStudent.value.approval,
+      lugarHomologacion: this.formStudent.value.approvalSite,
+      asignaturasHomologacion: this.targetApprovalSubjects.map((subject) => subject.codAsignatura),
+      aceptaUsoDatos: true,
       usuario: userInfo,
     }
 
@@ -152,6 +216,19 @@ export class StudentEditComponent implements OnInit {
       })
   }
 
+  protected formatSubjectName(descripcion: string, level: number, code: string) {
+    return `Semestre ${level}: (${code}) ${descripcion}`;
+  }
+
+  protected intoCareerInfo(activateCallback: (step: number) => void) {
+    if (this.formStudent.value.approval) {
+        this.getCurrentSubjects(this.studentToEdit().codEstudiante);
+    } else {
+      this.targetApprovalSubjects = [];
+    }
+
+    activateCallback(2);
+  }
 
   hasFormChanged() {
     const currentValue = this.formStudent.getRawValue();

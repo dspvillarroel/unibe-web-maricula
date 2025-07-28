@@ -13,6 +13,7 @@ import {
 import {
   SubjectManagmentComponent
 } from '@app/components/administrator/subject/subject-managment/subject-managment.component';
+import {environment} from '@env/environment';
 
 export const routes: Routes = [
   {
@@ -29,11 +30,32 @@ export const routes: Routes = [
     component: AppLayout,
     canActivate: [authGuard],
     children: [
-      {path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
-      {path: 'current-level', component: CurrentLevelComponent, canActivate: [authGuard]},
-      {path: 'student-management', component: StudentManagementComponent, canActivate: [authGuard]},
-      {path: 'career-management', component: CareersManagementComponent, canActivate: [authGuard]},
-      {path: 'subject-management', component: SubjectManagmentComponent, canActivate: [authGuard]},
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [authGuard],
+        data: {roles: [environment.roleEstudiante, environment.roleAdministrator]}
+      },
+      {
+        path: 'current-level', component: CurrentLevelComponent, canActivate: [authGuard],
+        data: {roles: [environment.roleEstudiante]}
+      },
+      {
+        path: 'student-management', component: StudentManagementComponent, canActivate: [authGuard],
+        data: {roles: [environment.roleAdministrator]}
+      },
+      {
+        path: 'career-management',
+        component: CareersManagementComponent,
+        canActivate: [authGuard],
+        data: {roles: [environment.roleAdministrator]}
+      },
+      {
+        path: 'subject-management',
+        component: SubjectManagmentComponent,
+        canActivate: [authGuard],
+        data: {roles: [environment.roleAdministrator]}
+      },
     ]
   }
 ];

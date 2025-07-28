@@ -8,7 +8,6 @@ import {InputNumber} from 'primeng/inputnumber';
 import {Button} from 'primeng/button';
 import {Tooltip} from 'primeng/tooltip';
 import {StudentList} from '@app/model/student/student-list';
-import {CarreraInfoResponse} from '@app/model/career/carrera-info-response';
 
 @Component({
   selector: 'app-student-filter',

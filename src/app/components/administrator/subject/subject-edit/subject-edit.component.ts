@@ -63,6 +63,7 @@ export class SubjectEditComponent implements OnInit {
       codMoodle: [subject.codMoodle, Validators.required],
       career: [{value: subject.carrera, disabled: true}, Validators.required],
       level: [subject.nivel, Validators.required],
+      credits: [subject.creditos]
     });
 
     this.originalDataForm = this.formSubject.getRawValue();
@@ -90,6 +91,7 @@ export class SubjectEditComponent implements OnInit {
       codCarrera: this.subjectToEdit().codCarrera,
       codTipoAsignatura: this.formSubject.value.codSubjectType,
       codMoodle: this.formSubject.value.codMoodle,
+      creditos: this.formSubject.value.credits ?? 0
     }
 
     this.administratorService.updateSubject(this.subjectToEdit().codAsignatura, subjectRequest)

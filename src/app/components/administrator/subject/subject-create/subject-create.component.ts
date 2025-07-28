@@ -61,6 +61,7 @@ export class SubjectCreateComponent implements OnInit {
       codMoodle: [null, Validators.required],
       career: [null, Validators.required],
       level: [{value: 1, disabled: this.isNotCareerSelected}, Validators.required],
+      credits: [0]
     });
   }
 
@@ -79,6 +80,7 @@ export class SubjectCreateComponent implements OnInit {
       codCarrera: this.formSubject.value.career,
       codTipoAsignatura: this.formSubject.value.codSubjectType,
       codMoodle: this.formSubject.value.codMoodle,
+      creditos: this.formSubject.value.credits ?? 0
     }
 
     this.isCreatingSubject = true;
@@ -93,7 +95,6 @@ export class SubjectCreateComponent implements OnInit {
         });
         this.closeDialog();
       });
-
   }
 
   changeCareer(event: DropdownChangeEvent) {

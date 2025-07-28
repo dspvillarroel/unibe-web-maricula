@@ -76,6 +76,17 @@ export class StudentManagementComponent {
     });
   }
 
+  protected exportApprovalUser(codStudent: number) {
+    this.administratorService.exportApprovalStudent(codStudent).subscribe(blob => {
+      const a = document.createElement('a');
+      const objectUrl = URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = 'estudiante_homologado.csv';
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    });
+  }
+
   protected getStudents(event: TableLazyLoadEvent) {
     if (this.listStudent) {
       const pageNo = (event.first ?? 0) / this.studentsPerPage;
@@ -105,7 +116,6 @@ export class StudentManagementComponent {
     this.listStudent = event;
 
     this.studentsTable.reset();
-    this.getStudents({first: 0});
   }
 
   protected refreshStudents(codUsuario: number) {
@@ -152,6 +162,12 @@ export class StudentManagementComponent {
 
   protected createStudent() {
     this.isCreatedStudent.set(true);
+  }
+
+  protected refreshSearch() {
+    this.isCreatedStudent.set(false);
+    this.isEditingStudent.set(false);
+    this.getStudents({first: 0});
   }
 
   protected editStudent(student: StudentInfoResponse) {

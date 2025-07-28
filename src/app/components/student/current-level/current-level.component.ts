@@ -49,7 +49,8 @@ export class CurrentLevelComponent {
         data: {
           code: asignatura.codAsignatura,
           title: asignatura.descripcion,
-          horas: asignatura.horas
+          horas: asignatura.horas,
+          credits: asignatura.creditos
         }
       });
     }

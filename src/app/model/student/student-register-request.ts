@@ -8,5 +8,9 @@ export interface StudentRegisterRequest {
   nivel: number;
   modalidad: number;
   fechaNacimiento: Date;
+  homologacion: boolean;
+  lugarHomologacion: string;
+  aceptaUsoDatos: boolean;
+  asignaturasHomologacion: string[];
   usuario: UserInfo;
 }

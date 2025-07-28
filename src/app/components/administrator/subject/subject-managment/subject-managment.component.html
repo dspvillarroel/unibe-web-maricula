@@ -1,3 +1,5 @@
+<h3 class="text-center">Administración de Asignaturas</h3>
+
 <div class="mt-5">
   <app-subject-create *ngIf="showDialog()" [showDialog]="showDialog()"
                       (onClose)="refreshSubjects()"></app-subject-create>
@@ -46,6 +48,9 @@
         <th id="username"
             [style]="{'width': '5%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Horas
         </th>
+        <th id="credits"
+            [style]="{'width': '5%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Créditos
+        </th>
         <th id="career"
             [style]="{'width': '15%', 'background-color': '#0957ff', 'color': 'white', 'text-align':'center'}">Tipo
           Asignatura
@@ -82,13 +87,14 @@
         <td>{{ subject.descripcion }}</td>
         <td>{{ subject.nivel }}</td>
         <td>{{ subject.horas }}</td>
+        <td>{{ subject.creditos }}</td>
         <td>{{ subject.tipoAsignatura }}</td>
         <td>{{ subject.codMoodle }}</td>
       </tr>
     </ng-template>
     <ng-template #loadingbody>
       <tr [style]="{height: '46px'}">
-        <td *ngFor="let _ of [{},{},{},{},{},{},{}]">
+        <td *ngFor="let _ of [{},{},{},{},{},{},{},{}]">
           <p-skeleton/>
         </td>
       </tr>
@@ -97,7 +103,7 @@
     @if (!loadingSubjects.value && this.subjects.length === 0) {
       <ng-template #emptymessage>
         <tr>
-          <td colspan="7" [style]="{'text-align': 'center'}">No existen asignaturas</td>
+          <td colspan="8" [style]="{'text-align': 'center'}">No existen asignaturas</td>
         </tr>
       </ng-template>
     }

@@ -4,4 +4,6 @@ export const environment = {
   baseUrlMatricula: 'http://localhost:8082',
   securityContext: '/unibe-api-security',
   matriculaContext: '/unibe-api-matricula',
+  roleAdministrator: 'ROLE_ADMIN',
+  roleEstudiante: 'ROLE_ESTUDIANTE',
 }

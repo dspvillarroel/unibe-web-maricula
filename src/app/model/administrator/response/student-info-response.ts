@@ -1,5 +1,6 @@
 export interface StudentInfoResponse {
   codUsuario: number;
+  codEstudiante: number;
   apellidos: string;
   correo: string;
   usuario: string;
@@ -14,4 +15,7 @@ export interface StudentInfoResponse {
   nivel: number;
   modalidad: string;
   codModalidad: number;
+  homologacion: boolean;
+  lugarHomologacion: string;
+  fechaNacimiento: Date;
 }

@@ -6,4 +6,5 @@ export interface SubjectRequest {
   codCarrera: number;
   codTipoAsignatura: number;
   codMoodle: number;
+  creditos: number;
 }

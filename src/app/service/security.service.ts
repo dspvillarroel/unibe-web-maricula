@@ -16,4 +16,9 @@ export class SecurityService {
     const url = `${this.baseUrl}${this.securityContext}/api/v1/auth/login`;
     return this.http.post<LoginResponse>(url, loginRequest);
   }
+
+  activateAccount() {
+    const url = `${this.baseUrl}${this.securityContext}/api/v1/auth/activate`;
+    return this.http.get<void>(url);
+  }
 }

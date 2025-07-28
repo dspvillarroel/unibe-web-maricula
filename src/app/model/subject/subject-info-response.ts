@@ -8,4 +8,5 @@ export interface SubjectInfoResponse {
   codMoodle: number;
   codCarrera: number;
   carrera: string;
+  creditos: number;
 }

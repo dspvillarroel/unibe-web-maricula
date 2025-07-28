@@ -4,5 +4,5 @@ export interface StudentLevelResponse {
   codAsignatura: string;
   carrera: string;
   tipoAsignatura: string;
+  creditos: number;
 }
-

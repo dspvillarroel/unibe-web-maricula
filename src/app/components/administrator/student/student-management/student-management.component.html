@@ -1,6 +1,9 @@
+<h3 class="text-center">Administración de Estudiantes</h3>
+<p-toast></p-toast>
+
 <div class="mt-5">
-  <app-student-create *ngIf="showDialog()" [showDialog]="showDialog()" (onClose)="isCreatedStudent.set(false)"></app-student-create>
-  <app-student-edit *ngIf="showDialogEdit()" [showDialog]="showDialogEdit()" (onClose)="isEditingStudent.set(false)"
+  <app-student-create *ngIf="showDialog()" [showDialog]="showDialog()" (onClose)="refreshSearch()"></app-student-create>
+  <app-student-edit *ngIf="showDialogEdit()" [showDialog]="showDialogEdit()" (onClose)="refreshSearch()"
                     [studentToEdit]="this.studentToEdit"
   ></app-student-edit>
 
@@ -14,7 +17,6 @@
                 pTooltip="Registrar Estudiante" tooltipPosition="left"/>
     </ng-template>
   </p-toolbar>
-  <p-toast></p-toast>
   <p-table #studentsTable
     [columns]=""
     [tableStyle]="{ 'min-width': '48rem' }"
@@ -96,6 +98,18 @@
                 pTooltip="Reenviar correo"
                 [loading]="loadingOperation.value"
                 (onClick)="resendEmail(student.codUsuario)"
+              ></p-button>
+            }
+
+            @if(student.homologacion) {
+              <p-button
+                [rounded]="true"
+                [text]="true"
+                icon="pi pi-download"
+                severity="warn"
+                pTooltip="Descargar CSV Homologado"
+                [loading]="loadingOperation.value"
+                (onClick)="exportApprovalUser(student.codEstudiante)"
               ></p-button>
             }
           </div>

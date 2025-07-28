@@ -86,7 +86,6 @@
               <small class="text-red-500 mt-1">El nombre de asignatura es requerido.</small>
             }
           </div>
-
           <div>
             <label for="hours" class="block text-sm font-bold mb-1">Horas</label>
             <input
@@ -101,6 +100,18 @@
             @if (this.formSubject.get('hours')?.hasError('required') && this.formSubject.get('hours')?.touched) {
               <small class="text-red-500 mt-1">Las horas son requeridas.</small>
             }
+          </div>
+          <div>
+            <label for="hours" class="block text-sm font-bold mb-1">Créditos</label>
+            <input
+              pInputText
+              id="credits"
+              formControlName="credits"
+              autocomplete="off"
+              pKeyFilter="num"
+              placeholder="10"
+              class="w-full p-inputtext"
+            />
           </div>
           <div>
             <label for="moodle-code" class="block text-sm font-bold mb-1">Código de Moodle</label>

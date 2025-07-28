@@ -106,7 +106,7 @@ export class SubjectManagmentComponent {
         this.administratorService.deleteSubject(codSubject).subscribe(
           () => {
             this.messageService.add({
-              severity: 'info',
+              severity: 'success',
               summary: 'Eliminado',
               detail: 'Asignatura eliminada correctamente'
             });
